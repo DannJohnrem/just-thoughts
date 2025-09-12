@@ -1,20 +1,40 @@
-name: Jekyll site CI
+name: CI/CD Deploy
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master" ]   # auto-deploy kapag may push sa master
   pull_request:
-    branches: [ "master" ]
+    branches: [ "master" ]   # CI checks kapag may PR
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the site in the jekyll/builder container
-      run: |
-        docker run \
-        -v ${{ github.workspace }}:/srv/jekyll -v ${{ github.workspace }}/_site:/srv/jekyll/_site \
-        jekyll/builder:latest /bin/bash -c "chmod -R 777 /srv/jekyll && jekyll build --future"
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # 👉 Dito ilagay ang build step mo (Docker + Jekyll, npm build, etc.)
+      - name: Build static site (Docker + Jekyll)
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/srv/jekyll" \
+            -v "${{ github.workspace }}/_site:/srv/jekyll/_site" \
+            jekyll/builder:latest /bin/bash -lc "chmod -R 777 /srv/jekyll && jekyll build --future"
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    if: github.ref == 'refs/heads/master'   # deploy lang kapag nasa master branch
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
