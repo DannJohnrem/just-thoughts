@@ -38,6 +38,7 @@ body {
 #addThoughtBtn {
     padding: 10px 16px;
     border: 2px solid #3498db;
+    border-radius: 6px;
     background: #3498db;
     color: white;
     font-size: 1rem;
@@ -48,4 +49,20 @@ body {
 #addThoughtBtn:hover {
     background: #2980b9;
     border-color: #2980b9;
+}
+
+#clearAllBtn {
+    padding: 10px 16px;
+    border: 2px solid #c71518;
+    border-radius: 6px;
+    background: #c71518;
+    color: white;
+    font: 1rem;
+    cursor: pointer;
+    transition: background 0.3s, border-color 0.3s;
+}
+
+#clearAllBtn:hover {
+    background: #a50e0e;
+    border-color: #a50e0e;
 }
