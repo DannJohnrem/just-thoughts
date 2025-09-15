@@ -23,10 +23,23 @@ const list = document.getElementById("thoughtList");
 //     input.focus();
 // });
 
+const STORAGE_KEY = "just-thoughts";
 let thoughts = [];
+let editingId = null;
+
+function saveThoughts() {
+    localStorage.setItem(STORAGE_KEY,  JSON.stringify(thoughts));
+}
+
+function loadThoughts() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    console.log("Loaded raw thoughts:", raw);
+    thoughts = raw ? JSON.parse(raw) : [];
+    console.log("Parsed thoughts:", thoughts);
+}
 
 function renderThoughts() {
-    list.innerHtml = '';
+    list.innerHTML = '';
     thoughts.forEach(thoughts => {
         const li = document.createElement("li");
         li.dataset.id = thoughts.id;
@@ -61,9 +74,13 @@ function updateCount() {
 
 function addThought (text) {
     const newThought = { id: Date.now().toString(), text, createdAt: new Date().toISOString() };
-    thoughts.push(newThought);
+    thoughts.unshift(newThought);
+    saveThoughts();
     renderThoughts();
 }
+
+loadThoughts();
+renderThoughts();
 
 addBtn.addEventListener("click",() => {
     const text = input.value.trim();
@@ -74,3 +91,12 @@ addBtn.addEventListener("click",() => {
 });
 
 
+list.addEventListener("click", (e) => {
+    const action = e.target.dataset.action;
+
+    if (!action) return;
+
+    const li = e.target.closest("li");
+    const id = li && li.datasetl.id;
+
+});
